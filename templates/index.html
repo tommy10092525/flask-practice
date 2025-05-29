@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <a href="/create">新規投稿</a>
+        {% for post in posts %}
+            <div>
+                <h2>{{ post.title }}</h2>
+                <p>{{ post.content }}</p>
+                <p>{{ post.created_at }}</p>
+            </div>
+        {% endfor %}
+    </body>
+</html>
