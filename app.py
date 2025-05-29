@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 from models import db, Post
 
 # アプリケーションの設定
@@ -25,7 +25,7 @@ def create():
         db.session.add(post)
         db.session.commit()
         # 投稿一覧にリダイレクト
-        return redirect('/')
+        return redirect(url_for('index'))
     # 投稿フォームを表示
     return render_template('create.html')
 
