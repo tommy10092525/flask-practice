@@ -221,7 +221,6 @@ HTMLの中でFlaskで使えるテンプレートエンジン(Jinja2テンプレ�
 
 ```html
 <!-- html -->
-<a href="{{ url_for('index') }}">投稿一覧</a>
 <a href="{{ url_for('create') }}">投稿作成</a>
 ```
 
