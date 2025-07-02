@@ -29,5 +29,5 @@ python app.py
 
 ## データベースを作成する
 ```
-python test.py
+python db.py
 ```
