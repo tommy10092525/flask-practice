@@ -4,9 +4,17 @@
 
 SNSを作るにあたってはユーザのデータを保存するためのサーバが必要です。  
 PythonでWebサーバを作るためのフレームワークである**Flask**を使って簡単な掲示板を作ってみましょう。  
-コードの書き方を覚えるというよりもそのコードが持つ「意味」や「内容」に着目して全体の流れをつかむことを意識してください。細かい書き方は本質的でないので覚えなくて大丈夫です。
+コードの書き方を覚えるというよりもそのコードが持つ「意味」や「内容」に着目して全体の流れをつかむことを意識してください。細かい書き方は本質的でないので覚えなくて大丈夫です。  
+FlaskはPythonのWebフレームワークの中でも特にシンプルで学習コストが低いものです。
+Flaskを使うことでWebアプリケーションの開発を簡単に始めることができます。
 
 ## 各ファイルを作成して概要をつかもう
+
+※必要なライブラリをインストールしていない場合は以下のコマンドを実行してください
+
+```shell
+pip install flask flask_sqlalchemy
+```
 
 - 必要なファイルを作成する
   - `app.py`、`models.py`、`db.py`をつくる
@@ -51,6 +59,28 @@ python db.py
 
 `models.py`にあるデータベースの定義からデータベースを作成します。
 
+## Flask特有の書き方
+
+### ルーティングの書き方
+
+```python
+# python
+from flask import Flask
+app = Flask(__name__)
+@app.route('/')
+def index():
+    return "<p>こんにちは!</p>"
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+
+このように書いて実行するとWebサーバーが立ち上がり、URLのアクセスに対してレスポンスを返すことができます
+`@app.route('/')`の@はデコレータと呼びます。（難しいから書き方だけ覚えればＯＫ！）
+デコレータは関数に対して特別な処理を追加するためのPythonの機能です。  
+`@app.route('/')`は「この関数は`/`というURLにアクセスしたときに実行される」という意味です。
+`index()`関数は`/`にアクセスしたときに実行される関数で、ここでは`"<p>こんにちは!</p>"`というHTMLを返しています。
+
 ## データベースについて
 
 ### 概要
@@ -77,7 +107,7 @@ class Post(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now)
 ```
 
-表形式でデータを格納することができます
+表形式でデータを格納することができます  
 ↓イメージ
 
 |id| title|content|created_at|
@@ -89,6 +119,7 @@ class Post(db.Model):
 本来データベースを操作するには **SQL**というデータベース操作言語を使います。しかし、独特な記法で習得が難しいです。
 Pythonをはじめとした多くの言語には**ORM**という仕組みが用意されていてSQLを使わずともそのプログラミング言語の書き方でデータベースを操作することができます。
 Flaskアプリケーションでデータベースを扱う際には**flask_sqlalchemy**というライブラリを使ってデータベースをPythonの書き方で操作することができます。
+SQLAlchemyはPythonのORMの一つで、Flaskと組み合わせて使うことができます。
   
 「投稿一覧を作成日時の降順で取得する」という場合には以下のようになります。（覚える必要はありません）
 
@@ -96,7 +127,7 @@ Flaskアプリケーションでデータベースを扱う際には**flask_sqla
 
 ```sql
 -- sql
-SELECT * FROM POSTS ORDER BY created_at DESC 
+SELECT * FROM POSTS ORDER BY created_at DESC
 ```
 
 #### Pythonの場合
@@ -107,6 +138,7 @@ posts = Post.query.order_by(Post.created_at.desc()).all()
 ```
 
 `DESC`はdescendの略で降順を意味します
+
 
 ### SQLite
 
@@ -120,6 +152,9 @@ db.init_app(app)
 
 [SQLite](https://sqlite.org/)というデータベースのソフトウェアの形式でデータベースを作成・管理しています。  
 `app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///database.db"`にて「このアプリケーションでデータベースでSQLiteを使う」という設定をしています。この部分を書き換えることで簡単にほかのデータベースも利用することができます。
+`sqlite:///database.db`はSQLiteのデータベースファイルのパスを指定しています。
+`db.init_app(app)`でアプリケーションにデータベースを初期化します。
+
 
 ### フォームのデータをデータベースに格納する
 
@@ -153,6 +188,7 @@ posts = Post.query.order_by(Post.created_at.desc()).all()
 
 Postクラスからメソッドを指定してクラスに設定されているデータを取り出すことができます。(Postクラスなら投稿データ)
 
+
 ## FlaskでHTMLを扱う
 
 ### `render_template()`について
@@ -181,6 +217,18 @@ return render_template('index.html', posts=posts)
 HTMLの中でFlaskで使えるテンプレートエンジン(Jinja2テンプレート)に準拠してforやifを書くことができます。（標準のHTMLの書き方ではありません！）
 これによってデータベースの内容に応じて動的にHTMLを生成することができます。
 
+### `url_for()`について
+
+```html
+<!-- html -->
+<a href="{{ url_for('index') }}">投稿一覧</a>
+<a href="{{ url_for('create') }}">投稿作成</a>
+```
+
+`url_for()`はFlaskのルーティングの関数名からURLを生成するための関数です。
+`url_for('index')`は`@app.route('/')`で定義した関数`index()`のURLを生成します。
+`url_for('create')`は`@app.route('/create', methods=['GET', 'POST'])`で定義した関数`create()`のURLを生成します。
+
 ### formについて
 
 ```html
@@ -193,24 +241,4 @@ HTMLの中でFlaskで使えるテンプレートエンジン(Jinja2テンプレ�
 ```
 
 formの中に文字を入力できる要素(input,textareaなど)を書いて`type='submit'`を指定したbuttonタグを設定するとデータを送信することができます。`<form action=`の後にデータを送信するURLを指定します。
-`{{ url_for('create') }}`はルーティングの関数名からURLを置き換えることができます。
-`method="post"`はHTMLリクエストのmethod(リクエスト種類)にPOSTを指定します。methodには`GET`,`POST`,`PUT`,`DELETE`などありますが、基本的にGETとPOSTだけで問題ないでしょう。
-
-## Flask特有の書き方
-
-### ルーティングの書き方
-
-```python
-# python
-from flask import Flask
-app = Flask(__name__)
-@app.route('/')
-def index():
-    return "<p>Hello world!</p>"
-
-if __name__ == '__main__':
-    app.run(debug=True)
-```
-
-このように書いて実行するとWebサーバーが立ち上がり、URLのアクセスに対してレスポンスを返すことができます
-`@app.route('/')`の@はデコレータと呼びます。（難しいから書き方だけ覚えればＯＫ！）
+`method="post"`はHTMLリクエストのmethod(リクエスト種類)にPOSTを指定します。methodには`GET`,`POST`,`PUT`,`DELETE`などありますが、基本的にGETとPOSTだけで問題ないでしょう。  
