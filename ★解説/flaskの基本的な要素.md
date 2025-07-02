@@ -1,3 +1,6 @@
+# Flask特有の書き方
+## ルーティングの書き方
+
 ```python
 from flask import Flask
 app = Flask(__name__)
