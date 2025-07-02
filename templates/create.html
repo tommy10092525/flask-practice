@@ -6,7 +6,7 @@
     </head>
     <body>
         <form action="{{ url_for('create') }}" method="post">
-            <input type="text" name="title" placeholder="タイトル">
+            <textarea type="text" name="title" placeholder="タイトル"></textarea>
             <textarea name="content" placeholder="内容"></textarea>
             <button type="submit">投稿</button>
         </form>
