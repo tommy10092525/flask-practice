@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <form method="post">
+    <textarea name="title" placeholder="{{post.title}}"></textarea>
+    <textarea name="content" placeholder="{{post.content}}"></textarea>
+    <button type="submit">保存</button>
+  </form>
+  <a href="{{ url_for('index') }}">投稿一覧</a>
+</body>
+</html>

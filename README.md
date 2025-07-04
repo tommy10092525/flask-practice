@@ -19,7 +19,7 @@ pip install flask flask_sqlalchemy
 - 必要なファイルを作成する
   - `app.py`、`models.py`、`db.py`をつくる
   - `templates`フォルダを作る
-  - `templates`フォルダの中に`create.html`と`index.html`を作る
+  - `templates`フォルダの中に`create.html`、`index.html`、`edit.html`を作る
 - データベースを作成する
   - `db.py`を実行する
     - `python db.py`で実行
@@ -36,6 +36,12 @@ pip install flask flask_sqlalchemy
 `models.py`データベースのモデル定義
 
 `db.py`データベースを作成する
+
+`index.html`投稿一覧のHTML
+
+`create.html`投稿作成のHTML
+
+`edit.html`投稿編集のHTML
 
 ### アプリケーションを起動する
 
@@ -59,9 +65,9 @@ python db.py
 
 `models.py`にあるデータベースの定義からデータベースを作成します。
 
-## Flask特有の書き方
+## ルーティングについて
 
-### ルーティングの書き方
+### 基本的なルーティングの書き方
 
 ```python
 # python
@@ -80,6 +86,29 @@ if __name__ == '__main__':
 デコレータは関数に対して特別な処理を追加するためのPythonの機能です。  
 `@app.route('/')`は「この関数は`/`というURLにアクセスしたときに実行される」という意味です。
 `index()`関数は`/`にアクセスしたときに実行される関数で、ここでは`"<p>こんにちは!</p>"`というHTMLを返しています。
+
+###　動的なルーティング
+```python
+# python
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit(id):
+  post = Post.query.get(id)
+  if request.method == 'POST':
+    # フォームからデータを取得
+    post.title = request.form.get('title') if request.form.get('title')!="" else post.title
+    post.content = request.form.get('content') if request.form.get('content')!="" else post.content
+    # データベースに保存
+    db.session.commit()
+    # 投稿一覧にリダイレクト
+    return redirect(url_for('index'))
+  # 編集フォームを表示
+  return render_template('edit.html', post=post)
+```
+
+`@app.route('/edit/<int:id>', methods=['GET', 'POST'])`について、`/edit/<int:id>`は`/edit/`の後に数字があるURLに対応することを示しています。`<int:id>`のURLの部分の数字を`def edit(id):`の引数のidとして利用しています。  
+`methods=['GET', 'POST']`は`GET`と`POST`のリクエストを許可するという意味です。`method`が`GET`であれば投稿編集用のページを返し、`POST`であればフォームに含まれる`title`と`content`を取り出し、投稿の内容を更新しています。
+
+
 
 ## データベースについて
 
@@ -199,7 +228,7 @@ Postクラスからメソッドを指定してクラスに設定されている�
 return render_template('index.html', posts=posts)
 ```
 
-`return render_template()`でHTMLを返します。関数の名前付き引数を指定することで指定した値をHTMLの中で使うことができます
+`return render_template()`でHTMLを返します。関数の名前付き引数を指定することで指定した値をHTMLの中で使うことができます。`posts=posts`と指定することでHTMLの中で`posts`の内容を利用することができます。
 
 ```html
 <!-- html -->
@@ -227,6 +256,48 @@ HTMLの中でFlaskで使えるテンプレートエンジン(Jinja2テンプレ�
 `url_for()`はFlaskのルーティングの関数名からURLを生成するための関数です。
 `url_for('index')`は`@app.route('/')`で定義した関数`index()`のURLを生成します。
 `url_for('create')`は`@app.route('/create', methods=['GET', 'POST'])`で定義した関数`create()`のURLを生成します。
+
+#### 活用方法
+
+以下のようにHTMLのテンプレートを記述し、
+
+```html
+{% for post in posts %}
+    <div>
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.content }}</p>
+        <p>{{ post.created_at }}</p>
+    </div>
+    <a href="{{url_for('edit',id=post.id)}}">編集</a>
+    <a href="{{url_for('delete',id=post.id)}}">削除</a>
+{% endfor %}
+```
+
+  データベースの内容がこのようになっているときHTMLは次のように出力されます
+|id|title|content|created_at|
+|-|-|-|-|
+|1|今日は池袋の水族館に行きました|ペンギンがかわいかったです|2025-07-10|
+|2|今日は大学に行きました|暑かった|2025-07-11|
+
+```html
+<div>
+  <h2>今日は池袋の水族館に行きました</h2>
+  <p>ペンギンがかわいかったです</p>
+  <p>2025-07-10</p>
+</div>
+<a href="/edit/1">編集</a>
+<a href="/delete/1">削除</a>
+<div>
+  <h2>今日は大学にに行きました</h2>
+  <p>暑かったです</p>
+  <p>2025-07-11</p>
+</div>
+<a href="/edit/2">編集</a>
+<a href="/delete/2">削除</a>
+```
+
+投稿ごとに`title`、`content`、`created_at`、編集ページへのリンク、削除ページへのリンクを作成することができます。
+
 
 ### formについて
 

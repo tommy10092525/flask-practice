@@ -13,6 +13,8 @@
                 <p>{{ post.content }}</p>
                 <p>{{ post.created_at }}</p>
             </div>
+            <a href="{{url_for('edit',id=post.id)}}">編集</a>
+            <a href="{{url_for('delete',id=post.id)}}">削除</a>
         {% endfor %}
     </body>
 </html>
