@@ -1,15 +1,16 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+# SQLAlchemyのインスタンスを作成
 db = SQLAlchemy()
 
-#データベースのテーブルを作成
+# Postモデル：投稿データを表すデータベースのテーブル
 class Post(db.Model):
-    #id
+    # id：主キーとして設定
     id = db.Column(db.Integer, primary_key=True)
-    #タイトル
+    # title：投稿のタイトル、空であってはならない
     title = db.Column(db.String, nullable=False)
-    #内容
+    # content：投稿の内容、空であってはならない
     content = db.Column(db.Text, nullable=False)
-    #作成日時
+    # created_at：投稿の作成日時、デフォルトで現在時刻が設定される
     created_at = db.Column(db.DateTime, default=datetime.now)
