@@ -5,11 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+  <!-- action属性を空にすると、現在のURL（/edit/<id>）にフォームが送信されます -->
   <form method="post">
+    <!-- placeholderにpost.titleを表示して、編集前のタイトルがわかるようにします -->
     <textarea name="title" placeholder="{{post.title}}"></textarea>
+    <!-- placeholderにpost.contentを表示して、編集前の内容がわかるようにします -->
     <textarea name="content" placeholder="{{post.content}}"></textarea>
     <button type="submit">保存</button>
   </form>
+  <!-- url_for('index')でトップページへのURLを生成します -->
   <a href="{{ url_for('index') }}">投稿一覧</a>
 </body>
 </html>

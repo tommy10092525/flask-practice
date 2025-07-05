@@ -5,11 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
+        <!-- フォームの送信先をurl_for('create')で指定します。これにより/createへのPOSTリクエストが送られます -->
         <form action="{{ url_for('create') }}" method="post">
             <textarea type="text" name="title" placeholder="タイトル"></textarea>
             <textarea name="content" placeholder="内容"></textarea>
             <button type="submit">投稿</button>
         </form>
+        <!-- url_for('index')でトップページへのURLを生成します -->
         <a href="{{ url_for('index') }}">投稿一覧</a>
     </body>
 </html>

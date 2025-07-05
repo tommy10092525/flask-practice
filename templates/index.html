@@ -5,15 +5,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
+        <!-- url_for('create')で新規投稿ページへのURLを生成します -->
         <a href="{{ url_for('create') }}">新規投稿</a>
         <h1>投稿一覧</h1>
+        <!-- for文を使って、posts（投稿のリスト）から各投稿をpostとして取り出します -->
         {% for post in posts %}
             <div>
+                <!-- postオブジェクトのtitle, content, created_at属性を表示します -->
                 <h2>{{ post.title }}</h2>
                 <p>{{ post.content }}</p>
                 <p>{{ post.created_at }}</p>
             </div>
+            <!-- url_for('edit', id=post.id)で編集ページへのURLを生成します -->
             <a href="{{url_for('edit',id=post.id)}}">編集</a>
+            <!-- url_for('delete', id=post.id)で削除処理へのURLを生成します -->
             <a href="{{url_for('delete',id=post.id)}}">削除</a>
         {% endfor %}
     </body>
