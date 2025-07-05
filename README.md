@@ -126,13 +126,13 @@ db = SQLAlchemy()
 
 #データベースのテーブルを作成
 class Post(db.Model):
-    #id
+    # id：主キーとして設定
     id = db.Column(db.Integer, primary_key=True)
-    #タイトル
+    # title：投稿のタイトル、空であってはならない
     title = db.Column(db.String, nullable=False)
-    #内容
+    # content：投稿の内容、空であってはならない
     content = db.Column(db.Text, nullable=False)
-    #作成日時
+    # created_at：投稿の作成日時、デフォルトで現在時刻が設定される
     created_at = db.Column(db.DateTime, default=datetime.now)
 ```
 
@@ -187,7 +187,7 @@ db.init_app(app)
 
 ### フォームのデータをデータベースに格納する
 
-```python
+```pythonf
 # python
 # フォームからデータを取得
 if request.method == 'POST':
@@ -211,11 +211,45 @@ db.session.commit()
 
 ### データベースのデータを取り出す
 
+データベースからデータを取り出す方法として、ORMを利用する方法と、直接SQLを実行する方法の2つがあります。
+
+#### ORM（SQLAlchemy）を利用する場合
+
 ```python
+# python
+# ORMを使って、すべての投稿を作成日時の降順で取得
 posts = Post.query.order_by(Post.created_at.desc()).all()
 ```
 
 Postクラスからメソッドを指定してクラスに設定されているデータを取り出すことができます。(Postクラスなら投稿データ)
+ORMを使用すると、Pythonのオブジェクトとしてデータを扱えるため、直感的でわかりやすいコードを書くことができます。
+
+#### 直接SQLを実行する場合
+
+ORMを使わずに、Pythonの標準ライブラリである`sqlite3`を使って直接SQLを実行することもできます。
+
+```python
+# python
+import sqlite3
+
+# データベースに接続
+conn = sqlite3.connect('instance/database.db')
+# カーソルを取得
+c = conn.cursor()
+# SQLを実行してすべての投稿を作成日時の降順で取得
+c.execute('SELECT * FROM post ORDER BY created_at DESC')
+# 取得したデータをリストに格納
+posts_from_sql = c.fetchall()
+# 接続を閉じる
+conn.close()
+
+# 取得したデータはタプルのリストとして返される
+# 例: [(1, 'タイトル1', '内容1', '2025-07-06 12:00:00'), (2, 'タイトル2', '内容2', '2025-07-05 18:00:00')]
+```
+
+直接SQLを記述する場合、SQLの知識が必要になりますが、複雑なクエリを自由に組み立てられるというメリットがあります。
+一方で、取得したデータはPythonのオブジェクトではなく、タプルのリストとして返ってくるため、扱う際に少し注意が必要です。
+
 
 
 ## FlaskでHTMLを扱う
