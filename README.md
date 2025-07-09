@@ -187,7 +187,7 @@ db.init_app(app)
 
 ### フォームのデータをデータベースに格納する
 
-```pythonf
+```python
 # python
 # フォームからデータを取得
 if request.method == 'POST':
